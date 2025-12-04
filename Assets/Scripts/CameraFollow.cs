@@ -23,6 +23,6 @@ public class CameraFollow : MonoBehaviour {
         transform.position = Vector3.Lerp(transform.position, newPos, speed * Time.deltaTime);
 
         // Orient the camera towards its target
-        transform.LookAt(cameraTarget);
+        //transform.LookAt(cameraTarget);
     }
 }
