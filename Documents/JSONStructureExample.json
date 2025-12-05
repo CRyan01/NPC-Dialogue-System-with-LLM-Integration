@@ -1,0 +1,27 @@
+{
+  "conversations": [
+    {
+      "id": "npc_intro",
+      "startNodeId": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker": "NPC",
+          "text": "Hello there! I have a quest for you if you're interested?",
+          "choices": [
+            { "text": "Yes, tell me more.", "nextNodeId": "quest_info" },
+            { "text": "No not right now.", "nextNodeId": "end" }
+          ]
+        },
+        {
+          "id": "quest_info",
+          "speaker": "NPC",
+          "text": "There's a Werewolf in the forest. Bring me its fang.",
+          "choices": [
+            { "text": "Ok I.", "nextNodeId": "end" }
+          ]
+        }
+      ]
+    }
+  ]
+}
