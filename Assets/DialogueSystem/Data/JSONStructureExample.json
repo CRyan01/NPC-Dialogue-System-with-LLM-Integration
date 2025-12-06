@@ -18,7 +18,7 @@
           "speaker": "NPC",
           "text": "There's a Werewolf in the forest. Bring me its fang.",
           "choices": [
-            { "text": "Ok I.", "nextNodeId": "end" }
+            { "text": "Okay.", "nextNodeId": "end" }
           ]
         }
       ]
