@@ -1,3 +1,4 @@
+using DialogueSystem.Unity;
 using UnityEngine;
 
 public class MouseLook : MonoBehaviour {
@@ -48,6 +49,11 @@ public class MouseLook : MonoBehaviour {
     }
 
     void LateUpdate() {
+        // Prevent camera movement while in dialogue.
+        if (DialogueService.Instance != null && DialogueService.Instance.IsConversationActive) {
+            return;
+        }
+
         // Get input values from the mouse.
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;

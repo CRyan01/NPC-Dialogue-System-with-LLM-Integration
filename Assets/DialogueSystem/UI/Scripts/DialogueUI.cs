@@ -73,6 +73,10 @@ public class DialogueUI : MonoBehaviour {
         // When a conversation starts, show the NPC panel first.
         m_state = DialogueUIState.NpcSpeaking;
         SetPanelsActive(npcActive: true, choicesActive: true);
+        
+        // Unlock the cursor and make it visible.
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 
     private void HandleConversationEnded(DialogueConversation conversation) {
@@ -83,6 +87,10 @@ public class DialogueUI : MonoBehaviour {
         SetPanelsActive(false, false);
         ClearChoices();
         SetNpcTexts(string.Empty, string.Empty);
+
+        // Lock the cursor and make it invisible.
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     private void HandleNodeEntered(DialogueNode node) {

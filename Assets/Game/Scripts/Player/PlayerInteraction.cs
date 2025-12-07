@@ -1,3 +1,4 @@
+using DialogueSystem.Unity;
 using UnityEngine;
 
 public class PlayerInteraction : MonoBehaviour {
@@ -43,6 +44,11 @@ public class PlayerInteraction : MonoBehaviour {
             if (interactionPrompt != null) {
                 // If valid, disable the interaction prompt.
                 interactionPrompt.SetActive(false);
+            }
+
+            // End the conversation if the players goes out of range of the collider.
+            if (DialogueService.Instance != null && DialogueService.Instance.IsConversationActive) {
+                DialogueService.Instance.EndConversation();
             }
         }
     }
