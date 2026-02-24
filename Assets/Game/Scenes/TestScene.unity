@@ -1412,6 +1412,7 @@ MonoBehaviour:
   bodyText: {fileID: 699896158}
   choicesContainter: {fileID: 1793549332}
   choiceButtonPrefab: {fileID: 4913727394039595472, guid: bf310ce877a513041a6f49581ff167ae, type: 3}
+  llmService: {fileID: 1947546728}
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -2131,15 +2132,65 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!1 &1947546727
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1947546729}
+  - component: {fileID: 1947546728}
+  m_Layer: 0
+  m_Name: LLMService
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1947546728
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1947546727}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b070641725f112b48b84498cb6dd720d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  apiKey: 
+  model: gpt-4o-mini
+  timeoutSeconds: 15
+  temperature: 0.7
+  maxTokens: 120
+--- !u!4 &1947546729
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1947546727}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2.115894, y: -14.049884, z: -5.9863153}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
+  - {fileID: 1667105153}
+  - {fileID: 1947546729}
   - {fileID: 705507995}
   - {fileID: 963194228}
-  - {fileID: 84076096}
-  - {fileID: 406247462}
-  - {fileID: 839192982}
   - {fileID: 286354031}
-  - {fileID: 1667105153}
   - {fileID: 228069387}
+  - {fileID: 84076096}
+  - {fileID: 839192982}
+  - {fileID: 406247462}
