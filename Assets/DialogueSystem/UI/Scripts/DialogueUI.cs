@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using DialogueSystem.Core;
 using DialogueSystem.Unity;
+using System;
 
 // UI controller which listens to DialogueService events and updates the on-screen dialogue panels.
 // When a conversation starts -> show the NPC panel first, when a node is entered -> show NPC speaker & response.
@@ -19,6 +20,12 @@ public class DialogueUI : MonoBehaviour {
 
     [SerializeField] private Transform choicesContainter; // parent container for choice buttons.
     [SerializeField] private Button choiceButtonPrefab; // prefab for a choice selection button.
+
+    [SerializeField] private DialogueSystem.Unity.LLMService llmService;
+
+    private string m_lastPlayerChoiceText;
+    private bool m_shouldGenerateNPCReply;
+    private bool m_isGenerating;
 
     // Simple state machine for the UI.
     private enum DialogueUIState {
@@ -48,6 +55,7 @@ public class DialogueUI : MonoBehaviour {
         DialogueService.Instance.OnConversationStarted += HandleConversationStarted;
         DialogueService.Instance.OnConversationEnded += HandleConversationEnded;
         DialogueService.Instance.OnNodeEntered += HandleNodeEntered;
+        DialogueService.Instance.OnChoiceSelected += HandleChoiceSelected;
     }
 
     private void OnDisable() {
@@ -60,9 +68,15 @@ public class DialogueUI : MonoBehaviour {
         DialogueService.Instance.OnConversationStarted -= HandleConversationStarted;
         DialogueService.Instance.OnConversationEnded -= HandleConversationEnded;
         DialogueService.Instance.OnNodeEntered -= HandleNodeEntered;
+        DialogueService.Instance.OnChoiceSelected -= HandleChoiceSelected;
     }
 
     private void Update() {
+        // Dont allow selection while already generating.
+        if (m_isGenerating) {
+            return;
+        }
+
         // Mouse click anywhere to advance from NPC speaking to choices.
         if (m_state == DialogueUIState.NpcSpeaking && Input.GetMouseButtonDown(0)) {
             ShowChoicesForCurrentNode();
@@ -93,7 +107,7 @@ public class DialogueUI : MonoBehaviour {
         Cursor.visible = false;
     }
 
-    private void HandleNodeEntered(DialogueNode node) {
+    private async void HandleNodeEntered(DialogueNode node) {
         // Check if the node is valid.
         if (node == null) {
             return;
@@ -108,6 +122,51 @@ public class DialogueUI : MonoBehaviour {
 
         SetNpcTexts(node.speaker, node.text);
         ClearChoices();
+
+        // Generate for NPC lines after a player choice.
+        if (m_shouldGenerateNPCReply && node.speaker == "NPC" && llmService != null && !m_isGenerating) {
+            m_shouldGenerateNPCReply = false;
+            m_isGenerating = true;
+
+            SetNpcTexts(node.speaker, "Generating...");
+
+            try {
+                string reply = await llmService.GenerateNPCReplyAsync(
+                    m_lastPlayerChoiceText, // player choice line.
+                    node.text // canon npc line.
+                    );
+
+                SetNpcTexts(node.speaker, reply);
+            } catch (Exception ex) {
+                Debug.LogWarning("LLM generation failed. Using fallback. " + ex.Message);
+
+                // Fallback to original line.
+                SetNpcTexts(node.speaker, node.text);
+            } finally {
+                m_isGenerating = false;
+            }
+        }
+    }
+
+    private void HandleChoiceSelected(DialogueNode node, int choiceIndex) {
+        // Check if the node is valid.
+        if (node == null) {
+            return;
+        }
+
+        // Check if the node has valid choices.
+        if (node.choices == null) {
+            return;
+        }
+
+        // Check if the players selected choice is valid.
+        if (choiceIndex < 0 || choiceIndex >= node.choices.Length) {
+            return;
+        }
+        
+        // Store the selected choice text.
+        m_lastPlayerChoiceText = node.choices[choiceIndex].text;
+        m_shouldGenerateNPCReply = true;
     }
 
     private void SetPanelsActive(bool npcActive, bool choicesActive) {
