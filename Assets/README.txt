@@ -24,3 +24,5 @@ How to Test
 7. The NPC response should then appear.
 
 If the API call fails, the original line will be shown instead.
+
+GitHub Link: https://github.com/CRyan01/NPC-Dialogue-System-with-LLM-Integration.git
