@@ -30,6 +30,8 @@ public class Interactable : MonoBehaviour {
         // Check if the conversation successfully started.
         if (!conversationStarted) {
             Debug.LogWarning("Interactable: Failed to start conversation with id: " + conversationId);
+        } else {
+            Debug.Log("Interactable: Started conversation with id: " + conversationId);
         }
     }
 }

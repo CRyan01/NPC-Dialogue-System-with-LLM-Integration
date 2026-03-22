@@ -3,6 +3,7 @@
     {
       "id": "npc_intro",
       "startNodeId": "start",
+      "personality": "grumpy old man",
       "nodes": [
         {
           "id": "start",
