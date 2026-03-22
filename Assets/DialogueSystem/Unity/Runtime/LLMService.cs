@@ -3,6 +3,7 @@ using UnityEngine.Networking;
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
 namespace DialogueSystem.Unity {
     public class  LLMService: MonoBehaviour {
@@ -12,7 +13,7 @@ namespace DialogueSystem.Unity {
         [SerializeField] private int timeoutSeconds = 15;
 
         [SerializeField] private float temperature = 0.7f; // creativity / correctness.
-        [SerializeField] private int maxTokens = 120;
+        [SerializeField] private int maxTokens = 180;
 
         private const string Endpoint = "https://api.openai.com/v1/chat/completions";
 
@@ -51,7 +52,7 @@ namespace DialogueSystem.Unity {
         }
 
         // An async operation to send a web request to the openAI api and wait to recieve a response.
-        public async Task<string> GenerateNPCReplyAsync(string playerChoiceText, string canonNpcLine) {
+        public async Task<string> GenerateNPCReplyAsync(string playerChoiceText, string canonNpcLine, string personality, string memoryContext) {
             // Ensure there is a valid api key to use.
             if (string.IsNullOrWhiteSpace(apiKey)) {
                 // If not throw an exception.
@@ -60,16 +61,20 @@ namespace DialogueSystem.Unity {
 
             // Instructions on how to behave.
             string system =
-                "You are an NPC in a fantasy RPG game. Stay in-character. " +
-                "Reply in 1-2 sentences. Do not mention you are an AI. " +
+                "You are an NPC in a fantasy RPG game. " +
+                $"Your personality is: {personality}. " +
+                "Stay in-character. " +
+                "Reply in 1-2 sentences. " +
+                "Do not mention you are an AI. " +
                 "Do not reference the real world. " +
                 "You must preserve the meaning of the provided canonical NPC line.";
 
             // Content of the prompt.
             string user =
-                $"The player chose: \"{playerChoiceText}\".\n\n" +
+                $"Recent conversation context:\n{memoryContext}\n\n" +
+                $"The player's current choice: \"{playerChoiceText}\".\n\n" +
                 $"Canonical NPC line (do not change the meaning): \"{canonNpcLine}\".\n\n" +
-                "Rewrite the canonical line naturally as the NPC would say it.";
+                "Rewrite the canonical NPC line naturally as this NPC would say it, taking the recent conversation context into account.";
 
             // Construct the payload.
             var payload = new ChatRequest {
@@ -94,6 +99,8 @@ namespace DialogueSystem.Unity {
             // Set the request header.
             request.SetRequestHeader("Content-Type", "application/json");
             request.SetRequestHeader("Authorization", "Bearer " + apiKey);
+
+            Debug.Log("Sending request to LLM");
 
             // Create an async operation to send the request and wait till its done.
             var asyncOperation = request.SendWebRequest();

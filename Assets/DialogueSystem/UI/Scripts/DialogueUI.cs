@@ -4,6 +4,7 @@ using TMPro;
 using DialogueSystem.Core;
 using DialogueSystem.Unity;
 using System;
+using System.Collections.Generic;
 
 // UI controller which listens to DialogueService events and updates the on-screen dialogue panels.
 // When a conversation starts -> show the NPC panel first, when a node is entered -> show NPC speaker & response.
@@ -23,11 +24,14 @@ public class DialogueUI : MonoBehaviour {
 
     [SerializeField] private DialogueSystem.Unity.LLMService llmService;
 
+    [SerializeField] private int maxRemeberedTurns = 6; // max amount of turns to store.
+    private List<string> m_recentConversationTurns = new List<string>(); // to store parts of a conversation short-term.
+
     private string m_lastPlayerChoiceText;
     private bool m_shouldGenerateNPCReply;
     private bool m_isGenerating;
 
-    // Simple state machine for the UI.
+    // Simple state for the UI.
     private enum DialogueUIState {
         Hidden, // nothing visible.
         NpcSpeaking, // NPC panel shown (waiting for click).
@@ -87,7 +91,9 @@ public class DialogueUI : MonoBehaviour {
         // When a conversation starts, show the NPC panel first.
         m_state = DialogueUIState.NpcSpeaking;
         SetPanelsActive(npcActive: true, choicesActive: true);
-        
+
+        Debug.Log("Conversation started in UI");
+
         // Unlock the cursor and make it visible.
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
@@ -101,6 +107,12 @@ public class DialogueUI : MonoBehaviour {
         SetPanelsActive(false, false);
         ClearChoices();
         SetNpcTexts(string.Empty, string.Empty);
+
+        // Clear old turns from short term memory and reset.
+        m_recentConversationTurns.Clear();
+        m_lastPlayerChoiceText = string.Empty;
+        m_shouldGenerateNPCReply = false;
+        m_isGenerating = false;
 
         // Lock the cursor and make it invisible.
         Cursor.lockState = CursorLockMode.Locked;
@@ -116,6 +128,8 @@ public class DialogueUI : MonoBehaviour {
         // Store the reference.
         m_currentNode = node;
 
+        Debug.Log("Entered node: " + node.id + " Speaker: " + node.speaker + " Text: " + node.text);
+
         // Show NPC panel with this nodes speaker + text.
         m_state = DialogueUIState.NpcSpeaking;
         SetPanelsActive(npcActive: true, choicesActive: false);
@@ -124,16 +138,33 @@ public class DialogueUI : MonoBehaviour {
         ClearChoices();
 
         // Generate for NPC lines after a player choice.
-        if (m_shouldGenerateNPCReply && node.speaker == "NPC" && llmService != null && !m_isGenerating) {
+        if (m_shouldGenerateNPCReply && node.speaker != "Player" && llmService != null && !m_isGenerating) {
             m_shouldGenerateNPCReply = false;
             m_isGenerating = true;
 
             SetNpcTexts(node.speaker, "Generating...");
 
             try {
+                AddConversationTurn("NPC: " + node.text); // Add NPC line to memory.
+
+                string memoryContext = string.Join("\n", m_recentConversationTurns);
+
+                string personality = "neutral"; // Assign a default personality of neutral.
+
+                // Null check and ensure the unique personality before assigning it.
+                if (DialogueService.Instance != null &&
+                    DialogueService.Instance.Runtime != null &&
+                    DialogueService.Instance.Runtime.CurrentConversation != null &&
+                    !string.IsNullOrEmpty(DialogueService.Instance.Runtime.CurrentConversation.personality)) {
+                    // Assign the NPCs unique personality.
+                    personality = DialogueService.Instance.Runtime.CurrentConversation.personality;
+                }
+
                 string reply = await llmService.GenerateNPCReplyAsync(
                     m_lastPlayerChoiceText, // player choice line.
-                    node.text // canon npc line.
+                    node.text, // canon npc line.
+                    personality, // npc personality type.
+                    memoryContext // short term memory.
                     );
 
                 SetNpcTexts(node.speaker, reply);
@@ -166,6 +197,12 @@ public class DialogueUI : MonoBehaviour {
         
         // Store the selected choice text.
         m_lastPlayerChoiceText = node.choices[choiceIndex].text;
+
+        Debug.Log("Choice selected: " + m_lastPlayerChoiceText);
+
+        // Update conversation memory with the players chosen line.
+        AddConversationTurn("Player: " + m_lastPlayerChoiceText);
+
         m_shouldGenerateNPCReply = true;
     }
 
@@ -248,5 +285,26 @@ public class DialogueUI : MonoBehaviour {
                 DialogueService.Instance.Choose(choiceIndex);
             });
         }
+    }
+
+    // Method to keep the conversation history updated.
+    private void AddConversationTurn(string turnText) {
+        // Ensure there is valid text.
+        if (string.IsNullOrWhiteSpace(turnText)) {
+            return;
+        }
+
+        // Add the text for the new turn.
+        m_recentConversationTurns.Add(turnText);
+
+        // Trim old turns.
+        if (m_recentConversationTurns.Count > maxRemeberedTurns) {
+            m_recentConversationTurns.RemoveAt(0);
+        }
+
+        Debug.Log(
+        "Conversation memory updated:\n" +
+        string.Join("\n", m_recentConversationTurns)
+        );
     }
 }

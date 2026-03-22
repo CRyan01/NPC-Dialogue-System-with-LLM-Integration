@@ -10,6 +10,9 @@ namespace DialogueSystem.Core {
         // ID of the node to start at (e.g. "start").
         public string startNodeId;
 
+        // The personality of the NPC. Changes response tone.
+        public string personality;
+
         // All nodes in this conversation.
         public DialogueNode[] nodes;
     }

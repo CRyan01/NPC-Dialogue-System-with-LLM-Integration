@@ -1,0 +1,159 @@
+{
+  "conversations": [
+    {
+      "id": "elder_intro",
+      "startNodeId": "start",
+      "personality": "wise and friendly village elder",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker": "Eldric",
+          "text": "Welcome, traveller. You look as though you carry questions.",
+          "choices": [
+            { "text": "Do you need help with anything?", "nextNodeId": "help" },
+            { "text": "What happened to this village?", "nextNodeId": "village" },
+            { "text": "I should go.", "nextNodeId": "end" }
+          ]
+        },
+        {
+          "id": "help",
+          "speaker": "Eldric",
+          "text": "There is trouble in the woods. A beast has been seen near the old shrine, and the villagers are afraid.",
+          "choices": [
+            { "text": "Tell me more about the beast.", "nextNodeId": "beast" },
+            { "text": "I can deal with it.", "nextNodeId": "accept" }
+          ]
+        },
+        {
+          "id": "village",
+          "speaker": "Eldric",
+          "text": "Once it was lively, but fear has settled over it like winter frost.",
+          "choices": [
+            { "text": "Can I help restore it?", "nextNodeId": "accept" },
+            { "text": "That sounds grim.", "nextNodeId": "end" }
+          ]
+        },
+        {
+          "id": "beast",
+          "speaker": "Eldric",
+          "text": "Some say it is a werewolf, others say it is something older and crueler.",
+          "choices": [
+            { "text": "I will hunt it down.", "nextNodeId": "accept" },
+            { "text": "That sounds too dangerous.", "nextNodeId": "end" }
+          ]
+        },
+        {
+          "id": "accept",
+          "speaker": "Eldric",
+          "text": "Then may fortune guide your path. Bring back proof, and the village will remember your kindness.",
+          "choices": [
+            { "text": "I understand.", "nextNodeId": "end" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "guard_gate",
+      "startNodeId": "start",
+      "personality": "stern and suspicious town guard",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker": "Captain Thorne",
+          "text": "Hold it. State your business before I decide you are trouble.",
+          "choices": [
+            { "text": "I am only passing through.", "nextNodeId": "passing" },
+            { "text": "I am looking for work.", "nextNodeId": "work" },
+            { "text": "Do you always greet people like this?", "nextNodeId": "attitude" }
+          ]
+        },
+        {
+          "id": "passing",
+          "speaker": "Captain Thorne",
+          "text": "Then pass through quickly and keep your hands where I can see them.",
+          "choices": [
+            { "text": "Understood.", "nextNodeId": "end" }
+          ]
+        },
+        {
+          "id": "work",
+          "speaker": "Captain Thorne",
+          "text": "Work, is it? We’ve had disappearances near the east road. Solve that and I may reconsider my opinion of you.",
+          "choices": [
+            { "text": "I will investigate.", "nextNodeId": "accept" },
+            { "text": "You could have asked more politely.", "nextNodeId": "attitude" }
+          ]
+        },
+        {
+          "id": "attitude",
+          "speaker": "Captain Thorne",
+          "text": "Politeness does not keep a town safe. Results do.",
+          "choices": [
+            { "text": "Fair enough.", "nextNodeId": "end" },
+            { "text": "Then give me something useful to do.", "nextNodeId": "accept" }
+          ]
+        },
+        {
+          "id": "accept",
+          "speaker": "Captain Thorne",
+          "text": "Fine. Report back if you find signs of bandits or beasts on the east road.",
+          "choices": [
+            { "text": "I’ll return with news.", "nextNodeId": "end" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "merchant_rumors",
+      "startNodeId": "start",
+      "personality": "charming but untrustworthy travelling merchant",
+      "nodes": [
+        {
+          "id": "start",
+          "speaker": "Mara",
+          "text": "A curious face. Looking to buy, sell, or hear something worth more than coin?",
+          "choices": [
+            { "text": "What are you selling?", "nextNodeId": "sell" },
+            { "text": "What rumours have you heard?", "nextNodeId": "rumours" },
+            { "text": "Can I trust you?", "nextNodeId": "trust" }
+          ]
+        },
+        {
+          "id": "sell",
+          "speaker": "Mara",
+          "text": "Only the rarest goods and the least honest prices.",
+          "choices": [
+            { "text": "At least you admit it.", "nextNodeId": "trust" },
+            { "text": "I am more interested in information.", "nextNodeId": "rumours" }
+          ]
+        },
+        {
+          "id": "rumours",
+          "speaker": "Mara",
+          "text": "They say something ancient wakes beneath the old shrine, and fools with swords are already marching toward it.",
+          "choices": [
+            { "text": "Where is this shrine?", "nextNodeId": "shrine" },
+            { "text": "Sounds like a bad rumour.", "nextNodeId": "trust" }
+          ]
+        },
+        {
+          "id": "trust",
+          "speaker": "Mara",
+          "text": "Trust is expensive. Lucky for you, conversation is still free.",
+          "choices": [
+            { "text": "Then tell me something useful.", "nextNodeId": "shrine" },
+            { "text": "I’ve heard enough.", "nextNodeId": "end" }
+          ]
+        },
+        {
+          "id": "shrine",
+          "speaker": "Mara",
+          "text": "East of the village, beyond the treeline. If you return alive, perhaps we can make a proper deal.",
+          "choices": [
+            { "text": "I’ll keep that in mind.", "nextNodeId": "end" }
+          ]
+        }
+      ]
+    }
+  ]
+}
